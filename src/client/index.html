@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>p2.js Canvas Box example</title>
+    <meta charset="utf-8">
+    <script src="/node_modules/socket.io-client/socket.io.min.js"></script>
+    <script src="/node_modules/p2/build/p2.min.js"></script>
+    <script src="/socket.js"></script>
+    <script src="/remote.js"></script>
+  </head>
+  <body>
+
+    <canvas width="200" height="200" id="myCanvas"></canvas>
+
+    <script>
+      var canvas, ctx, w, h, world, boxBody, planeBody;
+
+      // Init canvas
+      canvas = document.getElementById("myCanvas");
+      w = canvas.width;
+      h = canvas.height;
+
+      ctx = canvas.getContext("2d");
+      ctx.lineWidth = 0.05;
+
+      initWorld();
+      animate();
+
+      function initWorld(){
+        world = new p2.World();
+        world.applyGravity = false;
+
+        boxShape = new p2.Box({ width: 3, height: .5 });
+        boxBody = new p2.Body({ mass:0.1, position:[0, 1], damping: .7, restitution: .8 });
+        boxBody.addShape(boxShape);
+        world.addBody(boxBody);
+
+        planeShape = new p2.Plane();
+        planeBody = new p2.Body();
+        planeBody.addShape(planeShape);
+        world.addBody(planeBody);
+      }
+
+      function drawbox(){
+        ctx.beginPath();
+        var x = boxBody.position[0], y = boxBody.position[1];
+        ctx.save();
+        ctx.translate(x, y);        // Translate to the center of the box
+        ctx.rotate(boxBody.angle);  // Rotate to the box body frame
+        ctx.rect(-boxShape.width/2, -boxShape.height/2, boxShape.width, boxShape.height);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      function drawPlane(){
+        var y = planeBody.position[1];
+        ctx.moveTo(-w, y);
+        ctx.lineTo( w, y);
+        ctx.stroke();
+      }
+
+      function render(){
+        // Clear the canvas
+        ctx.clearRect(0,0,w,h);
+
+        // Transform the canvas
+        // Note that we need to flip the y axis since Canvas pixel coordinates
+        // goes from top to bottom, while physics does the opposite.
+        ctx.save();
+        ctx.translate(w/2, h/2);  // Translate to the center
+        ctx.scale(50, -50);       // Zoom in and flip y axis
+
+        // Draw all bodies
+        drawbox();
+        drawPlane();
+
+        // Restore transform
+        ctx.restore();
+      }
+
+      // Animation loop
+      function animate(){
+        // console.log(boxBody.position);
+        requestAnimationFrame(animate);
+
+        // Move physics bodies forward in time
+        world.step(1/60);
+
+        // Render scene
+        render();
+      }
+      //
+      // function doKeyDown(e) {
+      //   // console.log(e.keyCode);
+      //
+      //   if ( e.keyCode == 119 ) {
+      //     applyForce(0, 100, boxBody);
+      //   }
+      //
+      //   if ( e.keyCode == 97 ) {
+      //     applyForce(-100, 0, boxBody);
+      //   }
+      //
+      //   if ( e.keyCode == 100 ) {
+      //       applyForce(100, 0, boxBody);
+      //   }
+      //
+      //   if ( e.keyCode == 115 ) {
+      //     applyForce(0, -100, boxBody);
+      //   }
+      // }
+      //
+      // function applyForce(x, y, object) {
+      //   var force = p2.vec2.fromValues(x, y);
+      //   var xForce = p2.vec2.create();
+      //
+      //   p2.vec2.scale(xForce, force, object.mass);
+      //   p2.vec2.add(object.force, object.force, xForce);
+      // }
+      //
+      // window.addEventListener("keypress", doKeyDown, false);
+
+    </script>
+
+  </body>
+</html>
