@@ -27,20 +27,32 @@ function applyForce(x, y, object) {
   p2.vec2.add(object.force, object.force, xForce);
 }
 
-setInterval(function() {
-  world.step(1 / 60);
-  io.sockets.emit('world.update', boxBody.position);
-});
-
 io.on('connection', (socket) => {
   console.log('client connected');
 
   socket.on('player.input', (direction) => {
     console.log(direction);
-    if (direction === 'up') {
-      applyForce(0, 100, boxBody);
+    if (direction === 'u') {
+      applyForce(0, 10, boxBody);
+    }
+    if (direction === 'd') {
+      applyForce(0, -10, boxBody);
+    }
+    if (direction === 'l') {
+      applyForce(-10, 0, boxBody);
+    }
+    if (direction === 'r') {
+      applyForce(10, 0, boxBody);
     }
   });
 });
 
 initWorld();
+
+function loop() {
+  world.step(1 / 30);
+  io.sockets.emit('world.update', boxBody.position);
+  setTimeout(loop, 1000 / 30);
+}
+
+loop();

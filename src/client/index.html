@@ -3,19 +3,18 @@
   <head>
     <title>p2.js Canvas Box example</title>
     <meta charset="utf-8">
-    <script src="/node_modules/socket.io-client/socket.io.min.js"></script>
-    <script src="/node_modules/p2/build/p2.min.js"></script>
-    <script src="/socket.js"></script>
-    <script src="/remote.js"></script>
   </head>
   <body>
+    <canvas width="1000" height="700" id="myCanvas"></canvas>
 
-    <canvas width="200" height="200" id="myCanvas"></canvas>
-
+    <script src="/node_modules/socket.io-client/dist/socket.io.min.js"></script>
+    <script src="/node_modules/p2/build/p2.min.js"></script>
+    <script src="/node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="/socket.js"></script>
+    <script src="/remote.js"></script>
     <script>
       var canvas, ctx, w, h, world, boxBody, planeBody;
 
-      // Init canvas
       canvas = document.getElementById("myCanvas");
       w = canvas.width;
       h = canvas.height;
@@ -47,7 +46,7 @@
         ctx.save();
         ctx.translate(x, y);        // Translate to the center of the box
         ctx.rotate(boxBody.angle);  // Rotate to the box body frame
-        ctx.rect(-boxShape.width/2, -boxShape.height/2, boxShape.width, boxShape.height);
+        ctx.rect(-boxShape.width / 2, -boxShape.height / 2, boxShape.width, boxShape.height);
         ctx.stroke();
         ctx.restore();
       }
@@ -84,42 +83,11 @@
         requestAnimationFrame(animate);
 
         // Move physics bodies forward in time
-        world.step(1/60);
+        world.step(1/30);
 
         // Render scene
         render();
       }
-      //
-      // function doKeyDown(e) {
-      //   // console.log(e.keyCode);
-      //
-      //   if ( e.keyCode == 119 ) {
-      //     applyForce(0, 100, boxBody);
-      //   }
-      //
-      //   if ( e.keyCode == 97 ) {
-      //     applyForce(-100, 0, boxBody);
-      //   }
-      //
-      //   if ( e.keyCode == 100 ) {
-      //       applyForce(100, 0, boxBody);
-      //   }
-      //
-      //   if ( e.keyCode == 115 ) {
-      //     applyForce(0, -100, boxBody);
-      //   }
-      // }
-      //
-      // function applyForce(x, y, object) {
-      //   var force = p2.vec2.fromValues(x, y);
-      //   var xForce = p2.vec2.create();
-      //
-      //   p2.vec2.scale(xForce, force, object.mass);
-      //   p2.vec2.add(object.force, object.force, xForce);
-      // }
-      //
-      // window.addEventListener("keypress", doKeyDown, false);
-
     </script>
 
   </body>
